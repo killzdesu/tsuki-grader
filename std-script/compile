@@ -1,0 +1,81 @@
+#!/usr/bin/env python
+
+import os
+import sys
+from time import localtime, strftime
+
+# GRADER_LOG = 'grader.log'
+GRADER_LOG = os.environ['GRADER_LOG']
+
+
+def logs(msg, echo=True):
+    global GRADER_LOG
+    log_name = GRADER_LOG
+    flog = open(log_name, "a")
+    flog.write('@ %s >> %s\n' % (strftime("%H:%M:%S", localtime()), msg))
+    if echo is True:
+        print '@ %s >> %s' % (strftime("%H:%M:%S", localtime()), msg)
+
+# --- Compiler setting
+C_COMPILER = "/usr/bin/gcc"
+CPP_COMPILER = "/usr/bin/g++"
+
+C_OPTIONS = "-O2 -s -static -std=c99 -DCONTEST -lm -Wall"
+CPP_OPTIONS = " -O2 -s -static -DCONTEST -lm -Wall"
+
+if(len(sys.argv) != 3 and len(sys.argv) != 5):
+    print "usage : compile <language> <source> [<output>] [<message>]"
+    exit(127)
+
+PARAMS = {}
+PARAMS['lang'] = sys.argv[1]
+PARAMS['source'] = sys.argv[2]
+if(len(sys.argv) != 5):
+    PARAMS['output'] = 'a.out'
+    PARAMS['mes'] = 'compiler_message'
+else:
+    PARAMS['output'] = sys.argv[3]
+    PARAMS['mes'] = sys.argv[4]
+
+
+# --- Remove exist file
+if os.path.exists(PARAMS['output']) is True:
+    os.remove(PARAMS['output'])
+if os.path.exists(PARAMS['mes']) is True:
+    os.remove(PARAMS['mes'])
+fcom = open(PARAMS['mes'], "a+")
+
+# --- Is source file exist
+if os.path.exists(PARAMS['source']) is False:
+    logs("ERROR : Source file does not exist!")
+    fcom.write("ERROR : Source file does not exist!\n")
+    exit(127)
+
+PARAMS['lang'] = PARAMS['lang'].lower()
+if PARAMS['lang'] == 'c++':
+    PARAMS['lang'] = 'cpp'
+
+
+# --- Compile
+if PARAMS['lang'] == 'c':
+    cmd = "%s %s -o %s %s 2> %s" % (C_COMPILER, PARAMS['source'],
+                                    PARAMS['output'], C_OPTIONS, PARAMS['mes'])
+    os.system(cmd)
+elif PARAMS['lang'] == 'cpp':
+    cmd = "%s %s -o %s %s 2> %s" % (CPP_COMPILER, PARAMS['source'],
+                                    PARAMS['output'], CPP_OPTIONS,
+                                    PARAMS['mes'])
+    os.system(cmd)
+else:
+    logs("ERROR : Invalid language specified !")
+    fcom.write("ERROR : Invalid language specified !")
+    exit(127)
+
+
+# --- Check output
+if os.path.exists(PARAMS['output']) is True:
+    logs("Compile success !")
+    exit(0)
+else:
+    logs("ERROR : Something went wrong during compilation !")
+    exit(127)

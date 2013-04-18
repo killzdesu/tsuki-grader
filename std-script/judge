@@ -1,0 +1,116 @@
+#!/usr/bin/env python
+
+import os.path
+import sys
+import subprocess
+from time import localtime, strftime
+
+# --- Parameter check
+if(len(sys.argv) != 4 and len(sys.argv) != 5):
+    print "usage : judge <language> <source> <task> [<grader-log>]"
+    exit(127)
+
+PARAMS = {'lang': sys.argv[1], 'source': sys.argv[2], 'task': sys.argv[3]}
+
+if len(sys.argv) == 4:
+    GRADER_LOG = 'grader.log'
+else:
+    GRADER_LOG = sys.argv[4]
+os.getenv('GRADER_LOG', 'grader.log')
+os.environ['GRADER_LOG'] = GRADER_LOG
+
+
+def logs(msg, echo=True):
+    global GRADER_LOG
+    log_name = GRADER_LOG
+    flog = open(log_name, "a")
+    flog.write('@ %s >> %s\n' % (strftime("%H:%M:%S", localtime()), msg))
+    if echo:
+        print '@ %s >> %s' % (strftime("%H:%M:%S", localtime()), msg)
+
+# --- Seperated
+logs("", False)
+
+PARAMS['lang'] = PARAMS['lang'].lower()
+if PARAMS['lang'] == 'c++' or PARAMS['lang'] == 'cc':
+    PARAMS['lang'] = 'cpp'
+lng = PARAMS['lang']
+
+# --- Find path
+path_now = os.getcwd().split('/')
+del path_now[-1], path_now[0]
+path_ev = ''
+for dr in path_now:
+    path_ev = path_ev+'/'+dr
+path_ev += "/ev/%s" % PARAMS['task']
+
+# --- Check something
+if lng != 'c' and lng != 'cpp':
+    logs("ERROR:Your language is not supported : %s" % (lng))
+    exit(127)
+
+if os.path.exists(PARAMS['source']) is False:
+    logs("ERROR: Source file does not exist!")
+    exit(127)
+
+if os.path.exists("%s" % (path_ev)) is False:
+    logs("ERROR: Task does not exist!")
+    exit(127)
+
+task_name = PARAMS['source'].split('/')[-1].strip()
+logs("Start grading task: %s with source: %s" % (PARAMS['task'], task_name))
+
+# --- Compile
+logs("Compiling source file...")
+cmd = "./compile %s %s" % (PARAMS['lang'], PARAMS['source'])
+#os.system(cmd)
+sts = subprocess.call(cmd, shell=True)
+if sts != 0:
+    logs("ERROR: Compilation error..")
+    exit(127)
+
+# --- Read config
+fconfig = open("%s/config" % path_ev, "r")
+configs_val = [con.strip() for con in fconfig.readlines() if con[0] != '#']
+
+config = {'test': int(configs_val[0]), 'score': int(configs_val[1])}
+config['memory'] = int(configs_val[2])*1024
+if len(configs_val) > 3:
+    config['time'] = float(configs_val[3])
+else:
+    config['time'] = 1.0
+
+# --- Run
+logs("Runing with test cases...")
+for x in range(1, config['test']+1):
+    logs("Running test case #%d.." % x)
+    cmd = "./run %s %s %s" % (path_ev, PARAMS['lang'], x)
+    os.system(cmd)
+
+# --- Grade
+logs("Grading...")
+cmd = "./grade %s %s" % (path_ev, PARAMS['lang'])
+sts = subprocess.call(cmd, shell=True)
+if sts != 0:
+    logs("ERROR: Grading error..")
+    exit(127)
+
+# --- Summarize
+fsmm = open("%s/result.txt" % path_ev, "r")
+smm = fsmm.readlines()
+
+if os.path.exists('result.txt') is True:
+    os.remove('result.txt')
+os.system("cp %s/result.txt result.txt" % path_ev)
+
+# Comment this line to debug
+os.remove("%s/result.txt" % path_ev)
+os.remove("run_result")
+
+print "Result : %s" % smm[0].strip()
+print "Score : %.2f" % (float(smm[-2]))
+print "Time : %.3f" % float(smm[-1])
+
+logs("Grading complete")
+temp = "Result : %s for %.2f point in %.3fs"
+logs(temp % (smm[0].strip(), float(smm[-2]), float(smm[-1])), False)

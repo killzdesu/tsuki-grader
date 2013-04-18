@@ -1,0 +1,76 @@
+#!/usr/bin/env python
+
+import os
+import sys
+from time import localtime, strftime
+
+# GRADER_LOG = 'grader.log'
+GRADER_LOG = os.environ['GRADER_LOG']
+
+
+def logs(msg, echo=True):
+    global GRADER_LOG
+    log_name = GRADER_LOG
+    flog = open(log_name, "a")
+    flog.write('@ %s >> %s\n' % (strftime("%H:%M:%S", localtime()), msg))
+    if echo is True:
+        print '@ %s >> %s' % (strftime("%H:%M:%S", localtime()), msg)
+
+if(len(sys.argv) != 3):
+    print "usage : grade <path> <language>"
+    exit(127)
+
+PARAMS = {'path': sys.argv[1], 'lang': sys.argv[2]}
+
+fconfig = open("%s/config" % PARAMS['path'], "r")
+configs_val = [con.strip() for con in fconfig.readlines() if con[0] != '#']
+
+config = {'test': int(configs_val[0]), 'score': int(configs_val[1])}
+config['memory'] = int(configs_val[2])*1024
+
+if len(configs_val) > 3:
+    config['time'] = float(configs_val[3])
+else:
+    config['time'] = 1.0
+
+fres = open("%s/result.txt" % PARAMS['path'], "w")
+score = 0.0
+maxtime = 0.0
+
+for case in range(1, config['test']+1):
+    if os.path.exists("%s/%d/config" % (PARAMS['path'], case)) is False:
+        tmp = PARAMS['path'].split('/')
+        logs("ERROR : %s-%d Config not found!" % (tmp[-1], case))
+        exit(127)
+    if os.path.exists("%s/%d/result.txt" % (PARAMS['path'], case)) is False:
+        tmp = PARAMS['path'].split('/')
+        logs("ERROR : %s-%d 'result.txt' not found!" % (tmp[-1], case))
+        exit(127)
+    fresult = open("%s/%d/result.txt" % (PARAMS['path'], case), "r")
+#    fconfig_tmp = open("%s/%d/config"%(PARAMS['path'],case),"r")
+#    subcase_num = fconfig_tmp.readlines()
+    result = [rl.strip() for rl in fresult.readlines() if rl[0] != '#']
+    if len(result) != 2:
+        fres.write('[')
+    for subcase in result:
+        if subcase == 'Correct':
+            fres.write('P')
+        elif subcase == 'Wrong':
+            fres.write('-')
+        elif subcase == 'Timeout':
+            fres.write('T')
+        elif subcase == 'Runtime':
+            fres.write('X')
+        else:
+            maxtime = max(maxtime, float(subcase))
+    if 'Wrong' in result or 'Timeout' in result or 'Runtime' in result:
+        score += 0
+    else:
+        score += float(config['score'])/float(config['test'])
+    if len(result) != 2:
+        fres.write(']')
+    fresult.close()
+    # Comment this line to debug
+    os.remove("%s/%d/result.txt" % (PARAMS['path'], case))
+
+fres.write("\n%.2f\n%.3f" % (score, maxtime))

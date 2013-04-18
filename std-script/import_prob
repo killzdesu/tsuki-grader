@@ -1,0 +1,81 @@
+#!/usr/bin/env python
+
+import os.path
+import sys
+import re
+from time import localtime, strftime
+
+GRADER_LOG = 'grader.log'
+
+
+def logs(msg, echo=True):
+    global GRADER_LOG
+    log_name = GRADER_LOG
+    flog = open(log_name, "a")
+    flog.write('@ %s >> %s\n' % (strftime("%H:%M:%S", localtime()), msg))
+    if echo is True:
+        print '@ %s >> %s' % (strftime("%H:%M:%S", localtime()), msg)
+
+# --- Seperated
+logs("", False)
+
+if(len(sys.argv) != 3):
+    print "usage : import_prob <test-cases> <task-name>"
+    exit(127)
+
+PARAMS = {'test': sys.argv[1], 'task': sys.argv[2]}
+
+# --- Find path and make folder
+path_now = os.getcwd().split('/')
+del path_now[-1], path_now[0]
+path_ev = ''
+for dr in path_now:
+    path_ev = path_ev+'/'+dr
+path_ev += "/ev/%s" % PARAMS['task']
+# Make folder
+if os.path.exists(path_ev) is True:
+    logs("Error: Task exists!")
+    exit(127)
+if not os.path.exists(PARAMS['test']):
+    logs("Error: Test data not found!")
+
+os.makedirs(path_ev)
+
+# --- Extract file
+form = None
+match = re.match(r'(.*)\.tar', PARAMS['test'])
+if match and match.group(1):
+    form = 'tar'
+match = re.match(r'(.*)\.tar\.gz', PARAMS['test'])
+if match and match.group(1):
+    form = 'gz'
+match = re.match(r'(.*)\.tar\.bz2', PARAMS['test'])
+if match and match.group(1):
+    form = 'bz'
+match = re.match(r'(.*)\.tar\.bz', PARAMS['test'])
+if match and match.group(1):
+    form = 'bz'
+match = re.match(r'(.*)\.zip', PARAMS['test'])
+if match and match.group(1):
+    form = 'zip'
+if form == None:
+    logs("Error: test data should be in zip,tar,tar.bz2,tar.gz format")
+    exit(127)
+cmd =""
+if form == 'tar':
+    cmd = "tar -xf "+PARAMS['test']+' -C'
+if form == 'bz':
+    cmd = "tar -xjf "+PARAMS['test']+' -C'
+if form == 'gz':
+    cmd = "tar -xzf "+PARAMS['test']+' -C'
+if form == 'zip':
+    cmd = "unzip -q "+PARAMS['test']+" -d"
+cmd += " "+path_ev
+os.system(cmd)
+
+# Setting up dir
+os.system("cp setup_dir "+path_ev)
+os.system("%s/setup_dir %s" % (path_ev, path_ev))
+os.remove('%s/setup_dir' % path_ev)
+
+logs("Add task named '%s' complete" % PARAMS['task'])

@@ -1,0 +1,87 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import subprocess
+import time
+from time import localtime, strftime
+
+if len(sys.argv) != 2:
+    print "Usage : grader <name>"
+    exit(127)
+
+PID = os.getpid()
+name = sys.argv[1].strip()
+
+GRADER_LOG = '%s/grader.log' % name
+
+
+def logs(msg, echo=True):
+    global GRADER_LOG
+    log_name = GRADER_LOG
+    flog = open(log_name, "a")
+    flog.write('@ %s |%s\n' % (strftime("%H:%M:%S", localtime()), msg))
+    if echo is True:
+        print '@ %s |%s' % (strftime("%H:%M:%S", localtime()), msg)
+
+
+def check_exit():
+    if os.path.exists('%s/stop-%d' % (name, PID)):
+        return True
+    if os.path.exists('%s/stop-%s' % (name, name)):
+        return True
+    if os.path.exists('%s/stop-all' % (name)):
+        return True
+    return False
+
+
+def del_exit():
+    if os.path.exists('%s/stop-%d' % (name, PID)):
+        os.remove('%s/stop-%d' % (name, PID))
+    if os.path.exists('%s/stop-%s' % (name, name)):
+        os.remove('%s/stop-%s' % (name, name))
+    if os.path.exists('%s/stop-all' % (name)):
+        os.remove('%s/stop-all' % (name))
+    if os.path.exists('%s/alive' % (name)):
+        os.remove('%s/alive' % (name))
+
+def read_format(fname):
+    fname = fname.split('.')
+    return fname[-1].strip()
+
+if not os.path.exists(name):
+    os.makedirs(name)
+path_ori = os.getcwd()
+# os.chdir(name)
+
+logs("Start grader '%s' with PID: %d" % (name, PID))
+del_exit()
+os.system('touch %s/alive' % (name))
+os.system('echo "%s" > %s/alive' % (PID, name))
+
+while True:
+    if check_exit():
+        del_exit()
+        logs("Closing grader '%s'" % name)
+        exit(0)
+    if os.path.exists('%s/command' % (name)) is False:
+        continue
+    fcmd = open('%s/command' % (name), "r")
+    cmd_all = fcmd.readlines()
+    fcmd.close()
+    if len(cmd_all) == 0:
+        continue
+    cmd = cmd_all[0].strip()
+    cmd = [x.strip() for x in cmd.split(' ')]
+    if cmd[0] == 'grade':
+        sh = "./judge %s %s %s " % (read_format(cmd[1]), cmd[1], cmd[2])
+        sh += GRADER_LOG
+        sts = subprocess.call(sh, shell=True)
+        if sts != 0:
+            print "Grading Error !"
+    del cmd_all[0]
+    fcmd = open('%s/command' % (name), "w")
+    for x in cmd_all:
+        fcmd.write(x)
+    fcmd.close()
+    time.sleep(1)

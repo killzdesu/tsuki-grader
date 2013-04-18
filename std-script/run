@@ -1,0 +1,150 @@
+#!/usr/bin/env python
+
+import os
+import re
+import sys
+from time import localtime, strftime
+
+# GRADER_LOG = 'grader.log'
+GRADER_LOG = os.environ['GRADER_LOG']
+tsys = 0
+treal = 0
+tuser = 0
+
+
+def logs(msg, echo=True):
+    global GRADER_LOG
+    log_name = GRADER_LOG
+    flog = open(log_name, "a")
+    flog.write('@ %s >> %s\n' % (strftime("%H:%M:%S", localtime()), msg))
+    if echo is True:
+        print '@ %s >> %s' % (strftime("%H:%M:%S", localtime()), msg)
+
+
+def compile_box(source, out):
+    os.system("g++ %s -o %s" % (source, out))
+
+
+def compare(out, sol):
+    fout = open(out, "r")
+    fsol = open(sol, "r")
+    con_out = fout.readlines()
+    con_sol = fsol.readlines()
+    con_out = [x.strip() for x in con_out]
+    con_sol = [x.strip() for x in con_sol]
+    con_out = filter(None, con_out)
+    con_sol = filter(None, con_sol)
+    if len(con_sol) != len(con_out):
+        return False
+    for x in range(len(con_sol)):
+        if con_sol[x] != con_out[x]:
+            return False
+    return True
+
+
+def read_time(tem):
+    p = re.match(r"(.*)r(.*)u(.*)s(.*)", tem)
+    m = []
+    for x in range(3):
+        m.append(float(p.group(x+1)))
+    time_stat = {}
+    time_stat['real'] = m[0]
+    time_stat['user'] = m[1]
+    time_stat['system'] = m[2]
+    return time_stat
+
+if len(sys.argv) != 5 and len(sys.argv) != 4:
+    print "Usage: run <path> <language> <test-num> [<program-name>]"
+    exit(127)
+
+lang = sys.argv[2]
+test_num = int(sys.argv[3])
+if len(sys.argv) > 4:
+    prog = sys.argv[4]
+else:
+    prog = 'a.out'
+
+PROBLEM_HOME = sys.argv[1]
+
+# Read config
+if os.path.exists("%s/%s/config" % (PROBLEM_HOME, test_num)) is False:
+    tmp = PROBLEM_HOME.split('/')
+    logs("ERROR : %s-%d Config not found!" % (tmp[-1], test_num))
+    exit(127)
+fcon = open("%s/%s/config" % (PROBLEM_HOME, test_num), "r")
+config_content = fcon.readlines()
+config_val = []
+for x in config_content:
+    if x[0] != '#':
+        config_val.append(x)
+config = {}
+config['test'] = int(config_val[0])
+config['time'] = float(config_val[1])
+config['memory'] = int(config_val[2])*1024  # convert mb to kb
+
+# Compile Sandbox
+if os.path.exists('./box') is False:
+    compile_box('box.cc', 'box')
+
+# Set result
+result_name = 'result.txt'
+result_adds = "%s/%s/%s" % (PROBLEM_HOME, test_num, result_name)
+if os.path.exists(result_adds) is True:
+    os.remove(result_adds)
+fresult = open(result_adds, "w")
+
+maxtime = 0.0
+
+for x in range(1, config['test']+1):
+
+    # Run in Sandbox
+    run_command = "./box -a 2 -f -T -t %f -m %d -i %s" \
+        " -o output.txt %s 2> run_result"
+    run_command = run_command % (config['time'],
+                                 config['memory'], "%s/%s/input-%d.txt" %
+                                 (PROBLEM_HOME, test_num, x), prog)
+
+    # Uncomment this line for debug
+    # logs(run_command,False)
+    os.system(run_command)
+
+    if not os.path.exists("output.txt"):
+        logs("ERROR: Output file not found!")
+        exit(127)
+
+    # Read result
+    fres = open('run_result', "r")
+    time_res = fres.readlines()
+    time_res = [o.strip() for o in time_res]
+
+    # Read time result
+    time_stat = read_time(time_res[-1])
+    maxtime = max(maxtime, time_stat['user'] + time_stat['system'])
+    if maxtime > config['time']:
+        maxtime = config['time']
+
+    # Check timeout
+    if time_res[0] != 'OK':
+        logs("Runtime error!")
+        if time_stat['user'] + time_stat['system'] >= config['time']:
+            logs("Test %d-%d: Timeout" % (test_num, x))
+            fresult.write("Timeout\n")
+        else:
+            logs("Test %d-%d: Runtime Error" % (test_num, x))
+            fresult.write("Runtime\n")
+    # Compare correction
+    else:
+        # You can edit how to compare
+        if compare('output.txt', "%s/%s/output-%d.txt" %
+                   (PROBLEM_HOME, test_num, x)):
+            logs("Test %d-%d: Correct" % (test_num, x))
+            fresult.write("Correct\n")
+        else:
+            logs("Test %d-%d: Wrong" % (test_num, x))
+            fresult.write("Wrong\n")
+
+# Uncomment this line to debug
+os.remove('output.txt')
+
+fresult.write("# Max time use\n")
+fresult.write(str(maxtime))

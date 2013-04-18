@@ -1,0 +1,63 @@
+#!/usr/bin/env python
+
+import os
+import sys
+
+path = sys.argv[1]
+ldir = os.listdir(path)
+
+# Count test case
+ldir.sort()
+cnt = 1
+check = True
+while True:
+    check = False
+    for x in ldir:
+        if str(cnt) in x:
+            check = True
+            break
+    if check is False:
+        break
+    cnt += 1
+
+# Read config
+fcfg = open('%s/config.cfg' % path, "r")
+config = [x.split(':')[1].strip() for x in fcfg.readlines() if x[0] != '#']
+conf = {'time': float(config[0]), 'memory': int(
+        config[1]), 'score': int(config[2])}
+
+os.remove('%s/config.cfg' % path)
+
+for num in range(1, cnt):
+    os.makedirs("%s/%d" % (path, num))
+    fcon = open("%s/%d/config" % (path, num), "w")
+    inc = 1
+    outc = 1
+    for x in ldir:
+        if str(num) in x and '.in' in x:
+            os.system("mv %s/%s %s/%d/input-%d.txt" %
+                      (path, x, path, num, inc))
+            inc += 1
+        if str(num) in x and '.sol' in x:
+            os.system("mv %s/%s %s/%d/output-%d.txt" % (
+                path, x, path, num, outc))
+            outc += 1
+
+    fcon.write("# Number of subcases\n")
+    fcon.write("%d\n" % (inc-1))
+    fcon.write("# Time limit\n")
+    fcon.write("%.2f\n" % conf['time'])
+    fcon.write("# Memory limit\n")
+    fcon.write("%d\n" % conf['memory'])
+    fcon.close()
+
+# --- Make config file
+fcon = open("%s/config" % path, "w")
+fcon.write("# Number of test case\n")
+fcon.write(str(cnt-1)+"\n")
+fcon.write("# Full score\n")
+fcon.write(str(conf['score'])+"\n")
+fcon.write("# Memory limit\n")
+fcon.write(str(conf['memory'])+"\n")
+fcon.write("# Time limit\n")
+fcon.write(str(conf['time'])+"\n")
