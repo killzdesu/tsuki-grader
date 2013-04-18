@@ -45,6 +45,7 @@ def del_exit():
     if os.path.exists('%s/alive' % (name)):
         os.remove('%s/alive' % (name))
 
+
 def read_format(fname):
     fname = fname.split('.')
     return fname[-1].strip()

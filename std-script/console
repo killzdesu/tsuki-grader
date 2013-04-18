@@ -7,18 +7,6 @@ import subprocess
 from lib.getch import *
 from time import localtime, strftime
 
-# --- Parameter check
-"""
-if(len(sys.argv) != 4 and len(sys.argv) != 5):
-    print "usage : judge <language> <source> <task> [<grader-log>]"
-    exit(127)
-"""
-
-class __grader:
-    def __init__(self, nm, pd):
-        self.name = nm
-        self.pid = pid
-
 GRADER_LOG = 'grader.log'
 
 
@@ -32,7 +20,7 @@ def logs(msg, echo=True):
 
 # --- Seperated
 logs("", False)
-x=0
+x = 0
 grader = {}
 pr = lambda x: sys.stdout.write(x)
 while True:
@@ -53,10 +41,10 @@ while True:
     elif inp == 's':
         pr("Input grader name: ")
         gname = raw_input().strip()
-        cmd = ['./grader',gname]
+        cmd = ['./grader', gname]
         gd = subprocess.Popen(cmd)
         print "Start grader '%s' by pid %d" % (gname, gd.pid)
-        grader[gname]=gd
+        grader[gname] = gd
         time.sleep(0.5)
     elif inp == 'k':
         pr("Input grader name: ")
@@ -64,7 +52,7 @@ while True:
         if not gname in grader:
             print "grader '%s' is not running" % gname
             continue
-        cmd = "touch %s/stop-%s" % (gname,gname)
+        cmd = "touch %s/stop-%s" % (gname, gname)
         os.system(cmd)
         print "Stoped grader '%s'" % gname
         time.sleep(0.5)

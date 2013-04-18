@@ -58,10 +58,10 @@ if match and match.group(1):
 match = re.match(r'(.*)\.zip', PARAMS['test'])
 if match and match.group(1):
     form = 'zip'
-if form == None:
+if form is None:
     logs("Error: test data should be in zip,tar,tar.bz2,tar.gz format")
     exit(127)
-cmd =""
+cmd = ""
 if form == 'tar':
     cmd = "tar -xf "+PARAMS['test']+' -C'
 if form == 'bz':
