@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8" />
+	<!-- Set the viewport width to device width for mobile -->
+	<meta name="viewport" content="width=device-width" />
+	<title>Welcome to Tsuki</title>
+	<link rel="stylesheet" href="css/normalize.css">
+	<link rel="stylesheet" href="css/foundation.css">
+	<link type="text/css" href="css/fonts/ubuntu.css" rel="stylesheet" />
+	<link href="css/bootstrap.css" rel="stylesheet">
+	<link href="css/bootstrap-responsive.css" rel="stylesheet">
+	<script src="js/vendor/custom.modernizr.js"></script>
+	<script src="js/vendor/jquery.js"></script>
+	<style type="text/css">
+		body {
+			padding-top:15%;
+			font-family: 'UbuntuMonoRegular';
+			//background: #f2f2f2;
+		}
+		
+	</style>
+</head>
+<body>
+{$result}
+<div class="container">
+	<div class="span6 offset3">
+		<center>
+		<div class="well" style="box-shadow: 5px 5px 8px #777;width:400px;">
+			<p style="padding:15px;letter-spacing:15px;padding-top:0px;margin-top:-10px;"><form method="POST" action="login.php">
+			<!--<h1 style="text-align:center;margin-top:-40px;margin-bottom:15px;letter-spacing:6px;">Login<br></h1>-->
+			<center>
+				<input type="text" name="username" id="user" class="span2" style="text-align:center;font-size:18pt;height:30px;" placeholder="Username"><br>
+				<input type="password" name="password" id="pass" class="span2" style="text-align:center;font-size:18pt;height:30px;" placeholder="Password">
+				<br><input type="submit" id="submit" class="btn submit">
+			</center>
+			</form>
+			</p>
+		</div>
+		</center>
+	</div>
+</div>
+
+	<!--<script src="js/bootstrap.min.js"></script>-->
+	<script type="text/javascript">
+	    $(function(){
+	        $('#submit').hide();
+		});
+		$('#pass').keydown(function(e){
+			if(e.which==13){
+				$('#submit').click();
+			}
+		});
+</script>
+	
+</body>
+</html>

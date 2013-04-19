@@ -21,6 +21,11 @@ def logs(msg, echo=True):
     if echo:
         print '@ %s >> %s' % (strftime("%H:%M:%S", localtime()), msg)
 
+
+def get_lang(source):
+    part = source.split('.')
+    return part[-1]
+
 # --- Seperated
 logs("", False)
 
@@ -92,6 +97,8 @@ while True:
             del grader[p]
         for gname in grader.iterkeys():
             print gname, ':', grader[gname].pid
+    elif inp == 'g':
+        task_name = arg
     elif inp == 'i':
         arg = cmd.arg.split(' ')
         testcase = arg[0]

@@ -1,0 +1,37 @@
+{include="header"}
+<!-- Topbar -->
+{include="topbar"}
+
+  <!-- End Header and Nav -->
+  
+  <br><br>
+
+  <div class="container">
+    <div class="row">    
+      <div class="span3 bs-docs-sidebar affix">
+        <div class="well">
+          <ul class="nav nav-pills nav-stacked">
+            <li class="nav-header">List header</li>
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="#">Problem</a></li>
+			<li><a href="#">Submit</a></li>
+			<li><a href="#">Help</a></li>
+          </ul>
+        </div>
+        
+        <!--<p><img src="http://placehold.it/320x240&text=Ad" /></p>-->
+          
+      </div>
+
+      <!-- Main Content Section -->
+      <!-- This has been source ordered to come first in the markup (and on small devices) but to be to the right of the nav on larger screens -->
+		<div class="offset3 span9">
+			<div class = "well well-large" style="background-color:#fefefe">
+				{include="$content"}
+			</div>
+
+		</div>
+	  </div>
+    </div>
+
+{include="footer"}

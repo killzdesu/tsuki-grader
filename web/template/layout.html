@@ -1,0 +1,42 @@
+{include="header"}
+<!-- Topbar -->
+{include="topbar"}
+
+  <!-- End Header and Nav -->
+  
+  <br><br>
+
+  <div class="container">
+    <div class="row">
+      <div class="span3 affix">
+        <div class="well">
+          <ul class="nav nav-pills nav-stacked">
+            <li class="nav-header">List header</li>
+{*			{$home=" "} {$prob=" "} {$subm=" "} {$help=" "}  *}
+            <li class=' {if="$now == 'home'"} active {/if} '><a href="main.php">Home</a></li>
+            <li class=' {if="$now == 'prob'"} active {/if} '><a href="problem.php">Problem</a></li>
+			<li class=' {if="$now == 'subm'"} active {/if}} '><a href="#">Submit</a></li>
+			<li class=' {if="$now == 'help'"} active {/if}} '><a href="#">Help</a></li>
+			{if="$admin == 1"}
+            <li class="nav-header">Admin Panel</li>
+			<li class=' {if="$now == 'admin'"} active {/if}} '><a href="console.php">Console</a></li>
+			{/if}
+          </ul>
+        </div>
+        
+        <!--<p><img src="http://placehold.it/320x240&text=Ad" /></p>-->
+          
+      </div>
+
+      <!-- Main Content Section -->
+      <!-- This has been source ordered to come first in the markup (and on small devices) but to be to the right of the nav on larger screens -->
+		<div class="offset3 span9">
+			<div class = "well well-large" style="background-color:#fefefe">
+				{include="$content"}
+			</div>
+
+		</div>
+	  </div>
+    </div>
+
+{include="footer"}

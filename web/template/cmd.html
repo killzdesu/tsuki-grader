@@ -1,0 +1,26 @@
+{if="$err == 'same'"}
+<span class="label label-important">Grader '{$gname}' is already running...</span>
+{/if}
+{if="$err == 'pass'"}
+<span class="label label-success">Start grader '{$gname}' complete</span>
+{/if}
+{if="$err == 'stopped'"}
+<span class="label label-success">Stop grader '{$gname}' complete</span>
+{/if}
+{if="$err == 'not'"}
+<span class="label label-important">Grader '{$gname}' not found</span>
+{/if}
+<div class="command grd bs-example">
+  <form class="form-inline" method="POST" action="start.php">
+	<div class="input-append">
+	  <input class="span2" style="height:30px;" type="text" placeholder="Grader name" name="gname">
+	  <input type="submit" value="Start" class="btn">
+	</div>
+  </form>
+  <form class="form-inline" method="POST" action="stop.php">
+	<div class="input-append">
+	  <input class="span2" style="height:30px;" type="text" placeholder="Grader name" name="gname">
+	  <input type="submit" value="Stop" class="btn">
+	</div>
+  </form>
+</div>
