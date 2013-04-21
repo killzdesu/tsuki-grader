@@ -4,22 +4,21 @@
 
   <!-- End Header and Nav -->
   
-  <br><br>
-
-  <div class="container">
+  <div class="container content-all">
     <div class="row">
       <div class="span3 affix">
         <div class="well">
-          <ul class="nav nav-pills nav-stacked">
+          <ul id="nav-side" class="nav nav-pills nav-stacked">
             <li class="nav-header">List header</li>
-{*			{$home=" "} {$prob=" "} {$subm=" "} {$help=" "}  *}
-            <li class=' {if="$now == 'home'"} active {/if} '><a href="main.php">Home</a></li>
-            <li class=' {if="$now == 'prob'"} active {/if} '><a href="problem.php">Problem</a></li>
-			<li class=' {if="$now == 'subm'"} active {/if}} '><a href="#">Submit</a></li>
-			<li class=' {if="$now == 'help'"} active {/if}} '><a href="#">Help</a></li>
+            <li id="nav-bg" class="actives"><a>&nbsp;</a></li>
+            <div id="nbg" class="activate">&nbsp;</div>
+            <li id="home" class=' {if="$now == 'home'"} active {/if} '><a href="main.php">Home</a></li>
+            <li id="prob" class=' {if="$now == 'prob'"} active {/if} '><a href="problem.php">Problem</a></li>
+			<li id="subm" class=' {if="$now == 'subm'"} active {/if}} '><a href="#">Submit</a></li>
+			<li id="help" class=' {if="$now == 'help'"} active {/if}} '><a href="#">Help</a></li>
 			{if="$admin == 1"}
             <li class="nav-header">Admin Panel</li>
-			<li class=' {if="$now == 'admin'"} active {/if}} '><a href="console.php">Console</a></li>
+			<li id="console" class=' {if="$now == 'console'"} active {/if}} '><a href="console.php">Console</a></li>
 			{/if}
           </ul>
         </div>
@@ -31,7 +30,7 @@
       <!-- Main Content Section -->
       <!-- This has been source ordered to come first in the markup (and on small devices) but to be to the right of the nav on larger screens -->
 		<div class="offset3 span9">
-			<div class = "well well-large" style="background-color:#fefefe">
+			<div class = "well well-large content-main">
 				{include="$content"}
 			</div>
 

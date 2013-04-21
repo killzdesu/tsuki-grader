@@ -22,9 +22,14 @@ $config = array(
 raintpl::configure( $config );
 	
 $tmpl = new RainTPL();
-$vtmpl = array("content"=>"cmd");
+$admin = 0;
+if ($loggedInUser->checkPermission(array(0=>2))){ 
+	$admin = 1;
+}
+$vtmpl = array('admin'=>$admin);
+$vtmpl += array("content"=>"cmd");
 $vtmpl += array("dname"=>$_SESSION['userCakeUser']->displayname);
-$vtmpl += array('now'=>"prob");
+$vtmpl += array('now'=>"console");
 $vtmpl += array('err'=>$error);
 $vtmpl += array('gname'=>$gname);
 $tmpl->assign($vtmpl);

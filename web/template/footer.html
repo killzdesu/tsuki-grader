@@ -1,9 +1,10 @@
-  <footer class="container" style="margin-top:40px;">
+  <footer class="container">
   <hr />
-      <div class="row" style="margin-top:-15px;margin-left:20px;">
-          <p style="color:#bfbfbf">&copy; Copyright tsuki-team</p>
+      <div class="row">
+          <p class="credit">&copy; Copyright tsuki-team</p>
       </div>
   </footer>
+
   <script>
   document.write('<script src=js/vendor/' +
   ('__proto__' in {} ? 'zepto' : 'jquery') +
@@ -16,12 +17,61 @@
     $(document).foundation();
   </script>
   <script type="text/javascript">
+    var bg_pos;
+    var now="{$now}";
+    switch(now)
+    {
+    	case "home": bg_pos="2px";break;
+    	case "prob": bg_pos="35px";break;
+    	case "subm": bg_pos="68px";break;
+    	case "help": bg_pos="100.5px";break;
+    	case "console": bg_pos="168px";break;
+    }
     $(function(){
-		$('.affix-top').affix();
-      //alert('hi');
-      //$('#navbar').affix();
-      
+	    //bg_pos = $("#nbg").css('margin-top');
+	    $("#nbg").removeClass("activate");
+	    $("#nbg").css('margin-top', bg_pos);
+   	    $("#nbg").addClass("activate");
+	    color_now = "rgb(0, 136, 204)";
+	    $("#"+now).find("a").css('color', "white");
     });
+    
+    $("#home").mouseover(function(){
+    	$("#nbg").css('margin-top', "2px");
+	    if(now!="home")$("#"+now).find("a").css('color', color_now);
+    }).mouseleave(function(){
+    	$("#nbg").css('margin-top', bg_pos);
+		$("#"+now).find("a").css('color', "white");
+    });
+    $("#prob").mouseover(function(){
+    	$("#nbg").css('margin-top', "35px");
+	    if(now!="prob")$("#"+now).find("a").css('color', color_now);
+    }).mouseleave(function(){
+    	$("#nbg").css('margin-top', bg_pos);
+		$("#"+now).find("a").css('color', "white");
+    });
+    $("#subm").mouseover(function(){
+    	$("#nbg").css('margin-top', "68px");
+    	if(now!="subm")$("#"+now).find("a").css('color', color_now);
+    }).mouseleave(function(){
+    	$("#nbg").css('margin-top', bg_pos);
+    	$("#"+now).find("a").css('color', "white");
+    });
+    $("#help").mouseover(function(){
+    	$("#nbg").css('margin-top', "100.5px");
+    	if(now!="help")$("#"+now).find("a").css('color', color_now);
+    }).mouseleave(function(){
+    	$("#nbg").css('margin-top', bg_pos);
+    	$("#"+now).find("a").css('color', "white");
+    });
+    $("#console").mouseover(function(){
+    	$("#nbg").css('margin-top', "168px");
+    	if(now!="console")$("#"+now).find("a").css('color', color_now);
+    }).mouseleave(function(){
+    	$("#nbg").css('margin-top', bg_pos);
+    	$("#"+now).find("a").css('color', "white");
+    });
+    
   </script>
 </body>
 </html>

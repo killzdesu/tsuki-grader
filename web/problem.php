@@ -16,7 +16,11 @@ include_once "lib/db.php";
 	
 	$tmpl = new RainTPL();
 	$vtmpl = array("content"=>"prob_list");
-	
+	$admin = 0;
+	if ($loggedInUser->checkPermission(array(0=>2))){ 
+		$admin = 1;
+	}
+	$vtmpl += array('admin'=>$admin);
 	connect_db();
 	$qry = mysql_query("SELECT * FROM prob_info");
 	$rows = mysql_num_rows($qry);

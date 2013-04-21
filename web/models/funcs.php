@@ -1163,7 +1163,6 @@ function securePage($uri){
 		$stmt->execute();
 		$stmt->bind_result($permission);
 		while ($stmt->fetch()){
-			print $permission." ";
 			$pagePermissions[] = $permission;
 		}
 		$stmt->close();
@@ -1182,7 +1181,7 @@ function securePage($uri){
 		else {
 // Edit this
 //			header("Location: account.php");
-			print "Damn";
+//			print "Damn";
 			return false;
 		}
 	}
