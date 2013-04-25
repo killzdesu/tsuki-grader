@@ -20,9 +20,11 @@ include_once "lib/db.php";
 	if ($loggedInUser->checkPermission(array(0=>2))){ 
 		$admin = 1;
 	}
+	
 	$vtmpl += array('admin'=>$admin);
+	/* ----- Old MySQL
 	connect_db();
-	$qry = mysql_query("SELECT * FROM prob_info");
+	$qry = mysql_query("SELECT * FROM ".DB_PREFIX()."prob_info");
 	$rows = mysql_num_rows($qry);
 	//*
 	$res = array();
@@ -31,12 +33,25 @@ include_once "lib/db.php";
 		$pid = mysql_result($qry,$i,'id');
 		$name = mysql_result($qry,$i,'name');
 		$fname = mysql_result($qry,$i,'fullname');
-		//$res += array("id"=>$pid,"name"=>$name,"fullname"=>$fname);
 		array_push($res,array("id"=>$pid,"name"=>$name,"fullname"=>$fname));
-		//print $pid." ".$name."<br>";
 	}
-	//print $res[0];
-	close_db();//*/
+	close_db();
+	//*/
+	
+	$db = connect_dbi();
+	$qry = "SELECT * FROM ".DB_PREFIX()."prob_info";
+	$res = array();
+	if( $result = $db->query($qry))
+	{
+		while($row = $result->fetch_assoc())
+		{
+			// array_push($res, $row);
+			$res[] = $row;
+		}
+		$result->free();
+	}
+	$db->close();
+	
 	$vtmpl += array("prob_info"=>$res);
 	$vtmpl += array("dname"=>$_SESSION['userCakeUser']->displayname);
 	$vtmpl += array('now'=>"prob");

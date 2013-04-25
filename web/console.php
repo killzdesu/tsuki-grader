@@ -10,7 +10,7 @@ if(!empty($_GET['error']))
 // Fix this to be POST -----------***
 if(!empty($_GET['gname']))
 	$gname = $_GET['gname'];
-
+	
 // config
 $config = array(
 	"base_url"      => null,
@@ -20,7 +20,7 @@ $config = array(
 	);
 
 raintpl::configure( $config );
-	
+
 $tmpl = new RainTPL();
 $admin = 0;
 if ($loggedInUser->checkPermission(array(0=>2))){ 

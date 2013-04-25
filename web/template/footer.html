@@ -1,7 +1,7 @@
   <footer class="container">
   <hr />
       <div class="row">
-          <p class="credit">&copy; Copyright tsuki-team</p>
+          <p class="credit">&copy; Copyright <a href="credit.php">tsuki-team</a></p>
       </div>
   </footer>
 
@@ -18,58 +18,37 @@
   </script>
   <script type="text/javascript">
     var bg_pos;
+    var addspace = 0;
+    var navlist = $('#nav-side').find('li[class!=nav-header]');
+    var navall = $('#nav-side').find('li');
     var now="{$now}";
-    switch(now)
-    {
-    	case "home": bg_pos="2px";break;
-    	case "prob": bg_pos="35px";break;
-    	case "subm": bg_pos="68px";break;
-    	case "help": bg_pos="100.5px";break;
-    	case "console": bg_pos="168px";break;
-    }
+    if("{$now}"=="credit")addspace = 33;
+    bg_pos = navlist.index($('#'+now))*32.75+2;
+    {if="$admin == 1"}
+    	if(navall.index($(this)) > navall.index($("#adm")))
+    		bg_pos += 35;
+    {/if}
+    bg_pos = bg_pos.toString()+"px";
     $(function(){
-	    //bg_pos = $("#nbg").css('margin-top');
-	    $("#nbg").removeClass("activate");
 	    $("#nbg").css('margin-top', bg_pos);
-   	    $("#nbg").addClass("activate");
 	    color_now = "rgb(0, 136, 204)";
 	    $("#"+now).find("a").css('color', "white");
     });
-    
-    $("#home").mouseover(function(){
-    	$("#nbg").css('margin-top', "2px");
-	    if(now!="home")$("#"+now).find("a").css('color', color_now);
+    var mg, ths, ind;
+    navlist.mouseover(function(){
+    	ind = navlist.index($(this));
+    	mg = (ind)*(32.75)+2;
+    	{if="$admin == 1"}
+    	if(navall.index($(this)) > navall.index($("#adm"))){
+    		mg += 35;
+    	}
+    	{/if}
+    	$("#nbg").css('margin-top', mg.toString()+"px");
+    	ths = $(this).attr('id');
+    	if(now!=ths)$("#"+now).find("a").css('color', color_now);
     }).mouseleave(function(){
     	$("#nbg").css('margin-top', bg_pos);
 		$("#"+now).find("a").css('color', "white");
-    });
-    $("#prob").mouseover(function(){
-    	$("#nbg").css('margin-top', "35px");
-	    if(now!="prob")$("#"+now).find("a").css('color', color_now);
-    }).mouseleave(function(){
-    	$("#nbg").css('margin-top', bg_pos);
-		$("#"+now).find("a").css('color', "white");
-    });
-    $("#subm").mouseover(function(){
-    	$("#nbg").css('margin-top', "68px");
-    	if(now!="subm")$("#"+now).find("a").css('color', color_now);
-    }).mouseleave(function(){
-    	$("#nbg").css('margin-top', bg_pos);
-    	$("#"+now).find("a").css('color', "white");
-    });
-    $("#help").mouseover(function(){
-    	$("#nbg").css('margin-top', "100.5px");
-    	if(now!="help")$("#"+now).find("a").css('color', color_now);
-    }).mouseleave(function(){
-    	$("#nbg").css('margin-top', bg_pos);
-    	$("#"+now).find("a").css('color', "white");
-    });
-    $("#console").mouseover(function(){
-    	$("#nbg").css('margin-top', "168px");
-    	if(now!="console")$("#"+now).find("a").css('color', color_now);
-    }).mouseleave(function(){
-    	$("#nbg").css('margin-top', bg_pos);
-    	$("#"+now).find("a").css('color', "white");
     });
     
   </script>

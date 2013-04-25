@@ -1,9 +1,5 @@
+@import "css3.less";
 /* Params */
-.radius(@size) {
-  -webkit-border-radius: @size;
-     -moz-border-radius: @size;
-          border-radius: @size;
-}
 .trans-color(@time, @slope) {
    -webkit-transition:color @time @slope;
   	  -moz-transition:color @time @slope;
@@ -25,13 +21,6 @@
 			transition-duration: @time;
 }
 
-.trans-all(@type, @time, @slope) {
-   -webkit-transition:@type @time @slope;
-  	  -moz-transition:@type @time @slope;
-		-o-transition:@type @time @slope;
-		   transition:@type @time @slope;
-}
-
 /* Footer */
 footer {
 	margin-top: 40px;
@@ -41,6 +30,13 @@ footer {
 	}
 	.credit {
 		color:#bfbfbf;
+		a {
+			color:#bfbfbf;
+		}
+		a:hover {
+			color:#777777;
+			text-decoration: none;
+		}
 	}
 }
 
@@ -70,6 +66,14 @@ footer {
 		text-decoration: none;
 		color: @lightblue;
 	}
+}
+
+/* background */
+body {
+	background:white url('../img/dot_black.jpgs') repeat;
+	display: block;
+    width: 100%;
+    height: auto;
 }
 
 /* content */
@@ -105,7 +109,7 @@ footer {
 		position: absolute;
 		width: 230px;
 		height: 30px;
-		.radius(4px);
+		.border-radius(4px);
 		background: @lightblue;
 		z-index:0;
 		.trans-all(margin-top, 0.8s, cubic-bezier(0.19, 1, 0.22, 1));
@@ -122,7 +126,7 @@ footer {
   *padding-top: 19px;
   background-color: #fff;
   border: 1px solid #ddd;
-  .radius(4px);
+  .border-radius(4px);
 }
 
 /* Echo out a label for the example */

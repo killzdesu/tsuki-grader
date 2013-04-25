@@ -1,6 +1,19 @@
 from peewee import *
 
-db = MySQLDatabase('tsuki', **{'passwd': 'tsuki22', 'user': 'tkg'})
+DB_DATABASE = 'tsuki'
+DB_USER = 'tkg'
+DB_PASSWD = 'tsuki22'
+DB_HOST = '127.0.0.1'
+"""
+DB_DATABASE = 'boardjui'
+DB_USER = 'boardjui'
+DB_PASSWD = 'jui95'
+DB_HOST = '110.77.143.212'
+"""
+
+db = MySQLDatabase(DB_DATABASE, **{'host': DB_HOST,
+                               'passwd': DB_PASSWD, 'user': DB_USER})
+DB_PREFIX = "tsk_"
 
 class UnknownFieldType(object):
     pass
@@ -14,21 +27,21 @@ class Command(BaseModel):
     main = CharField()
 
     class Meta:
-        db_table = 'command'
+        db_table = DB_PREFIX + 'command'
 
 class Done(BaseModel):
     arg = TextField()
     main = CharField()
 
     class Meta:
-        db_table = 'done'
+        db_table = DB_PREFIX + 'done'
 
 class Grader(BaseModel):
     name = CharField(primary_key=True)
     pid = IntegerField()
 
     class Meta:
-        db_table = 'grader'
+        db_table = DB_PREFIX + 'grader'
 
 class ProbInfo(BaseModel):
     avail = IntegerField()
@@ -43,41 +56,41 @@ class ProbInfo(BaseModel):
     time = FloatField()
 
     class Meta:
-        db_table = 'prob_info'
+        db_table = DB_PREFIX + 'prob_info'
 
 class UcConfiguration(BaseModel):
     name = CharField()
     value = CharField()
 
     class Meta:
-        db_table = 'uc_configuration'
+        db_table = DB_PREFIX + 'uc_configuration'
 
 class UcPages(BaseModel):
     page = CharField()
     private = IntegerField()
 
     class Meta:
-        db_table = 'uc_pages'
+        db_table = DB_PREFIX + 'uc_pages'
 
 class UcPermissionPageMatches(BaseModel):
     page = IntegerField(db_column='page_id')
     permission = IntegerField(db_column='permission_id')
 
     class Meta:
-        db_table = 'uc_permission_page_matches'
+        db_table = DB_PREFIX + 'uc_permission_page_matches'
 
 class UcPermissions(BaseModel):
     name = CharField()
 
     class Meta:
-        db_table = 'uc_permissions'
+        db_table = DB_PREFIX + 'uc_permissions'
 
 class UcUserPermissionMatches(BaseModel):
     permission = IntegerField(db_column='permission_id')
     user = IntegerField(db_column='user_id')
 
     class Meta:
-        db_table = 'uc_user_permission_matches'
+        db_table = DB_PREFIX + 'uc_user_permission_matches'
 
 class UcUsers(BaseModel):
     activation_token = CharField()
@@ -93,5 +106,5 @@ class UcUsers(BaseModel):
     user_name = CharField()
 
     class Meta:
-        db_table = 'uc_users'
+        db_table = DB_PREFIX + 'uc_users'
 

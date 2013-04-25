@@ -3,6 +3,7 @@
 UserCake Version: 2.0.2
 http://usercake.com
 */
+include_once "super.php";
 
 //Functions that do not interact with DB
 //------------------------------------------------------------------------------
@@ -71,14 +72,14 @@ function generateHash($plainText, $salt = null)
 {
 	if ($salt === null)
 	{
-		$salt = substr(md5(uniqid(rand(), true)), 0, 25);
+		$salt = substr(hash('md5',uniqid(rand(), true)), 0, 25);
 	}
 	else
 	{
 		$salt = substr($salt, 0, 25);
 	}
 	
-	return $salt . sha1($salt . $plainText);
+	return $salt . hash('sha1', $salt . $plainText);
 }
 
 //Checks if an email is valid
@@ -384,7 +385,7 @@ function isUserLoggedIn()
 	$stmt->store_result();
 	$num_returns = $stmt->num_rows;
 	$stmt->close();
-	
+	if($loggedInUser->user_id < 0)return true;
 	if($loggedInUser == NULL)
 	{
 		return false;
@@ -1153,6 +1154,10 @@ function securePage($uri){
 		return false;
 	}
 	else {
+		if(check_super($loggedInUser)){
+			return true;
+		}
+		
 		//Retrieve list of permission levels with access to page
 		$stmt = $mysqli->prepare("SELECT
 			permission_id

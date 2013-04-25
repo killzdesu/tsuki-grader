@@ -10,14 +10,16 @@
         <div class="well">
           <ul id="nav-side" class="nav nav-pills nav-stacked">
             <li class="nav-header">List header</li>
-            <li id="nav-bg" class="actives"><a>&nbsp;</a></li>
             <div id="nbg" class="activate">&nbsp;</div>
             <li id="home" class=' {if="$now == 'home'"} active {/if} '><a href="main.php">Home</a></li>
             <li id="prob" class=' {if="$now == 'prob'"} active {/if} '><a href="problem.php">Problem</a></li>
 			<li id="subm" class=' {if="$now == 'subm'"} active {/if}} '><a href="#">Submit</a></li>
 			<li id="help" class=' {if="$now == 'help'"} active {/if}} '><a href="#">Help</a></li>
+			{if="$now == 'credit'"}
+			<li id="credit" class='active'><a href="credit.php">Credit</a></li>
+			{/if}
 			{if="$admin == 1"}
-            <li class="nav-header">Admin Panel</li>
+            <li id="adm" class="nav-header">Admin Panel</li>
 			<li id="console" class=' {if="$now == 'console'"} active {/if}} '><a href="console.php">Console</a></li>
 			{/if}
           </ul>

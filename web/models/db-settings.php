@@ -3,13 +3,13 @@
 UserCake Version: 2.0.2
 http://usercake.com
 */
-
+include_once "lib/db.php";
 //Database Information
-$db_host = "localhost"; //Host address (most likely localhost)
-$db_name = "tsuki"; //Name of Database
-$db_user = "tkg"; //Name of database user
-$db_pass = "tsuki22"; //Password for database user
-$db_table_prefix = "uc_";
+$db_host = MYSQL_HOST; //Host address (most likely localhost)
+$db_name = MYSQL_DATABASE; //Name of Database
+$db_user = MYSQL_USER; //Name of database user
+$db_pass = MYSQL_PASSWD; //Password for database user
+$db_table_prefix = DB_PREFIX()."uc_";
 
 GLOBAL $errors;
 GLOBAL $successes;

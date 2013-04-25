@@ -1,5 +1,6 @@
 <?php
 include "lib/rain.tpl.class.php";
+include_once "models/super.php";
 require_once("models/config.php");
 if (!securePage($_SERVER['PHP_SELF'])){die();}
 //print 'help';
@@ -25,6 +26,8 @@ if(!empty($_POST))
 	if(count($errors) == 0)
 	{
 		//A security note here, never tell the user which credential was incorrect
+		super($username, $password);
+		print "pass";
 		if(!usernameExists($username))
 		{
 			$errors[] = lang("ACCOUNT_USER_OR_PASS_INVALID");

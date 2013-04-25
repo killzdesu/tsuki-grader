@@ -3,7 +3,9 @@
 import os
 import re
 import sys
+import subprocess
 from time import localtime, strftime
+from lib.compare import *
 
 # GRADER_LOG = 'grader.log'
 GRADER_LOG = os.environ['GRADER_LOG']
@@ -23,23 +25,6 @@ def logs(msg, echo=True):
 
 def compile_box(source, out):
     os.system("g++ %s -o %s" % (source, out))
-
-
-def compare(out, sol):
-    fout = open(out, "r")
-    fsol = open(sol, "r")
-    con_out = fout.readlines()
-    con_sol = fsol.readlines()
-    con_out = [x.strip() for x in con_out]
-    con_sol = [x.strip() for x in con_sol]
-    con_out = filter(None, con_out)
-    con_sol = filter(None, con_sol)
-    if len(con_sol) != len(con_out):
-        return False
-    for x in range(len(con_sol)):
-        if con_sol[x] != con_out[x]:
-            return False
-    return True
 
 
 def read_time(tem):
@@ -78,9 +63,31 @@ for x in config_content:
     if x[0] != '#':
         config_val.append(x)
 config = {}
+config['check'] = None;
+for item in os.listdir("%s" % PROBLEM_HOME):
+    if "check" == item.split('.')[0] and item[-1] != '~':
+        config['check'] = item
+        break
 config['test'] = int(config_val[0])
 config['time'] = float(config_val[1])
 config['memory'] = int(config_val[2])*1024  # convert mb to kb
+
+# Set check command
+if config['check'] is not None:
+    ctype = config['check'].split('.')[-1]
+    if ctype == 'py':
+        config['check'] = "python "+PROBLEM_HOME+"/"+config['check']
+    if ctype == 'cpp' or ctype == 'cc' or ctype == 'c':
+        cmpl = "g++ %s/%s -o %s/check" % (PROBLEM_HOME, config['check'],
+                                         PROBLEM_HOME)
+        if os.path.exists(PROBLEM_HOME+"/check"):
+            os.remove(PROBLEM_HOME+"/check")
+        os.system(cmpl)
+        if not os.path.exists(PROBLEM_HOME+"/check"):
+            logs("ERROR: Compile check file error!")
+            config['check'] = None
+        else:
+            config['check'] = PROBLEM_HOME+"/check"
 
 # Compile Sandbox
 if os.path.exists('./box') is False:
@@ -134,14 +141,28 @@ for x in range(1, config['test']+1):
             fresult.write("Runtime\n")
     # Compare correction
     else:
+        p_out = 'output.txt'
+        p_sol = "%s/%s/output-%d.txt" % (PROBLEM_HOME, test_num, x)
         # You can edit how to compare
-        if compare('output.txt', "%s/%s/output-%d.txt" %
-                   (PROBLEM_HOME, test_num, x)):
-            logs("Test %d-%d: Correct" % (test_num, x))
-            fresult.write("Correct\n")
+        if config['check'] is not None:
+            cmd = config['check'] + " %s %s" % (p_out, p_sol)
+            check_res = subprocess.check_output(cmd, shell=True)
+            check_res = check_res.strip()
+            if check_res == "Correct":
+                logs("Test %d-%d: Correct" % (test_num, x))
+                fresult.write("Correct\n")
+            else:
+                logs("Test %d-%d: Wrong" % (test_num, x))
+                fresult.write("Wrong\n")
         else:
-            logs("Test %d-%d: Wrong" % (test_num, x))
-            fresult.write("Wrong\n")
+#            order('output.txt', "%s/%s/output-%d.txt" %
+#                  (PROBLEM_HOME, test_num, x))
+            if compare(p_out, p_sol):
+                logs("Test %d-%d: Correct" % (test_num, x))
+                fresult.write("Correct\n")
+            else:
+                logs("Test %d-%d: Wrong" % (test_num, x))
+                fresult.write("Wrong\n")
 
 # Uncomment this line to debug
 os.remove('output.txt')

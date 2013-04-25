@@ -1,0 +1,80 @@
+#!/usr/bin/python
+
+import os.path
+import sys
+import time
+import subprocess
+from lib.getch import *
+from time import localtime, strftime
+import MySQLdb as mdb
+from peewee import *
+from lib.db_models import *
+
+GRADER_LOG = 'grader.log'
+
+
+def logs(msg, echo=True):
+    global GRADER_LOG
+    log_name = GRADER_LOG
+    flog = open(log_name, "a")
+    flog.write('@ %s >> %s\n' % (strftime("%H:%M:%S", localtime()), msg))
+    if echo:
+        print '@ %s >> %s' % (strftime("%H:%M:%S", localtime()), msg)
+
+
+def get_lang(source):
+    part = source.split('.')
+    return part[-1]
+
+# --- Seperated
+logs("", False)
+
+pr = lambda x: sys.stdout.write(x)
+pr("Grader name: ")
+gname = raw_input().strip()
+
+# --- Check exists
+db.connect()
+grd = Grader().select()
+grd = [x.name for x in grd]
+if gname in grd:
+    print "Error: Grader '%s' exists" % gname
+    exit(127)
+db.close()
+
+cmd = ['./grader', gname]
+grader = subprocess.Popen(cmd)
+print "Start grader '%s' by pid %d" % (gname, grader.pid)
+
+# --- Add grader to db
+db.connect()
+grd = Grader()
+grd.name = gname
+grd.pid = grader.pid
+grd.save(force_insert=True)
+db.close()
+
+print "Press 'k' to stop grader"
+
+# --- Start loop
+while True:
+    time.sleep(0.5)
+    inp = getch()
+
+# --- Runing command
+    if inp == 'h':
+        print "s: start grader"
+        print "k: stop grader"
+    elif inp == 'k':
+        cmd = "touch %s/stop-%s" % (gname, gname)
+        os.system(cmd)
+        print "Stoped grader '%s'" % gname
+        # --- Delete grader from db
+        db.connect()
+        qry = Grader.select().where(Grader.name == gname)
+        qry[0].delete_instance()
+        db.close()
+        exit(0)
+    else:
+        print "Command not found..."
+        time.sleep(0.5)

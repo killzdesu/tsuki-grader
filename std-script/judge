@@ -43,6 +43,9 @@ path_ev = ''
 for dr in path_now:
     path_ev = path_ev+'/'+dr
 path_ev += "/ev/%s" % PARAMS['task']
+# --- TEMP ---------------------------------DEL PLS
+#path_ev = "~/ev/%s" % PARAMS['task']
+#print path_ev
 
 # --- Check something
 if lng != 'c' and lng != 'cpp':
